@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC
+ "-//Apache Software Foundation//DTD Struts Configuration 2.5//EN"
+ "http://struts.apache.org/dtds/struts-2.5.dtd">
+ 
+<struts>
+    <constant name="struts.action.excludePattern" value="/static/.*?" />
+    <include file="struts-default.xml"/>
+    <package name="libmanage" extends="struts-default"  namespace="/">
+        <action name="RepoAllCommits" class="actions.RepoAllCommits">
+            <result name="success">/repocommits.jsp</result>
+            <result name="none">/none.jsp</result>
+            <result name="error">/error.jsp</result>
+        </action>
+        <action name="signin" class="actions.SignIn">
+        	<result name="signedin">/index.jsp</result>
+        	<result name="fail">/index.jsp</result>
+        	<result name="error">/index.jsp</result>
+        </action>
+        <action name="signup" class="actions.SignUp">
+        	<result name="success">/login.jsp</result>
+        	<result name="error">/error.jsp</result>
+        </action>
+        <action name="logout" class="actions.LogOut">
+          	<result>/index.jsp</result>
+        </action>
+        
+       
+    </package>
+</struts>
