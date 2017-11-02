@@ -32,8 +32,19 @@
     
     <package name="ajax" extends="json-default" namespace="/aj">
     	<action name="ajaxtest" class="actions.AJAXtest">
-    		<result name="success" type="json">
+    		<result name="error" type="json">
     			<param name="root">result</param>
+    		</result>
+    	</action>
+    	
+    	<action name="getpackages" class="actions.UserPackages" >
+    		<result name="success" type="json">
+    			<param name="root">packages</param>
+    		</result>
+    	</action>
+    	
+    	<action name="addPackage" class="actions.AddPackage">
+    		<result name="success" type="json">
     		</result>
     	</action>
     	

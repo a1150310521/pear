@@ -9,7 +9,7 @@
 </head>
 <body>
 <s:if test="#session.username!=null">
-<div>欢迎，<s:property value="#session.username"/></div>
+<div>欢迎，<a href="userhome.jsp"><s:property value="#session.username"/></a></div>
 </s:if>
 <s:else>
 <a href="login.jsp">登录</a><br/>
@@ -18,8 +18,9 @@
 <a href="logout.action">登出</a>
 
 <button id = "ajax" >AJAX</button>
-<script src="statics/jquery-1.3.1.js"></script>
+<script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
+$(function(){
 $("#ajax").click(function(){
 	$.ajax({
 		url:"aj/ajaxtest.action",
@@ -31,9 +32,10 @@ $("#ajax").click(function(){
 		},
 		
 		success:function (data){
-			alert(data);
+			alert(JSON.parse(data)["repos"][0]["projectname"]);
 		}
 	});
+});
 });
 </script>
 </body>

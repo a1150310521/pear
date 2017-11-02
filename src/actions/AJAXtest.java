@@ -6,8 +6,9 @@ import java.util.Map;
   
 import net.sf.json.JSONObject;  
 import beans.ProjectBean;
+
+import com.opensymphony.xwork2.ActionContext;
 import com.opensymphony.xwork2.ActionSupport; 
-import beans.ProjectBean;
 public class AJAXtest extends ActionSupport{
   private String username;
   private List<ProjectBean> projectList;
@@ -39,6 +40,8 @@ public class AJAXtest extends ActionSupport{
   }
   
   public String execute()  {
+    String user = ActionContext.getContext().getSession().get("username").toString();
+    System.out.println(user);
     Map<String,Object> map = new HashMap<String,Object>();
     List<ProjectBean> list = new ArrayList<ProjectBean>();
     System.out.println(this.getUsername());
@@ -53,12 +56,10 @@ public class AJAXtest extends ActionSupport{
       
       list.add(pb);
     }
-    map.put("repos", list);
-    map.put("username", this.getUsername());
     JSONObject jo = new JSONObject();
-    jo.element("repo", map);
+    jo.element("repos", list);
     this.setResult(jo.toString());
     System.out.println(this.getResult());
-    return "success";
+    return "error";
   }
 }
