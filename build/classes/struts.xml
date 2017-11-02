@@ -25,6 +25,17 @@
           	<result>/index.jsp</result>
         </action>
         
+         
+        
        
+    </package>
+    
+    <package name="ajax" extends="json-default" namespace="/aj">
+    	<action name="ajaxtest" class="actions.AJAXtest">
+    		<result name="success" type="json">
+    			<param name="root">result</param>
+    		</result>
+    	</action>
+    	
     </package>
 </struts>

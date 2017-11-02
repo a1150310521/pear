@@ -16,5 +16,25 @@
 <a href="signup.jsp">注册</a>
 </s:else>
 <a href="logout.action">登出</a>
+
+<button id = "ajax" >AJAX</button>
+<script src="statics/jquery-1.3.1.js"></script>
+<script>
+$("#ajax").click(function(){
+	$.ajax({
+		url:"aj/ajaxtest.action",
+		type:"post",
+		dataType:"json",
+		data:{
+			username:"mushroom"
+			
+		},
+		
+		success:function (data){
+			alert(data);
+		}
+	});
+});
+</script>
 </body>
 </html>
