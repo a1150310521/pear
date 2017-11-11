@@ -9,8 +9,16 @@ public class ProjectBean {
   private String reponame;
   private String repomaster;
   private String username;
+  private String packagename;
+  
   private List<StudentBean> students;
   
+  public void setPackagename(String a){
+    this.packagename = a;
+  }
+  public String getPackagename(){
+    return this.packagename;
+  }
   public void setProjectname(String a){
     this.projectname = a;
   }

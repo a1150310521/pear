@@ -30,10 +30,32 @@
        
     </package>
     
-    <package name="ajax" extends="json-default" namespace="/aj">
+    <package name="ajax" extends="struts-default, json-default" namespace="/aj">
     	<action name="ajaxtest" class="actions.AJAXtest">
+    		<result name="succcess" type="json">
+    			<param name="root">state</param>
+    		</result>
+    	</action>
+    	
+    	
+    	
+    	<action name="addPackage" class="actions.AddPackage">
+    		<result name="success" type="json">
+    		</result>
+    	</action>
+    	
+    	<action name="packageProjects" class="actions.PackageProjects">
+    		<result name="success" type="json">
+    			<param name="root">projects</param>
+    		</result>
+    	</action>
+    	
+    	<action name="addOneProject" class="actions.AddProject" >
+    		<result name="success" type="json">
+    		</result>
     		<result name="error" type="json">
-    			<param name="root">result</param>
+    		</result>
+    		<result name="logout" type="json">
     		</result>
     	</action>
     	
@@ -43,10 +65,6 @@
     		</result>
     	</action>
     	
-    	<action name="addPackage" class="actions.AddPackage">
-    		<result name="success" type="json">
-    		</result>
-    	</action>
     	
     </package>
 </struts>

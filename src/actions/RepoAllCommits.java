@@ -16,6 +16,8 @@ import org.eclipse.egit.github.core.service.*;
 
 import beans.CommitBean;
 public class RepoAllCommits {
+    private String repomaster;
+    private String reponame;
 	private List<CommitBean> commitList;
 
 	public void setCommitList(List<CommitBean> commitList){
@@ -34,7 +36,7 @@ public class RepoAllCommits {
 		RepositoryService repoSer = new RepositoryService(client);
 		CommitService comSer = new CommitService(client);
 
-		Repository repo = repoSer.getRepository("BokunoMasayume","bootstrap-note");
+		Repository repo = repoSer.getRepository(repomaster,reponame);
 		commitList = new ArrayList<CommitBean>();
 		for(RepositoryCommit repoCom : comSer.getCommits(repo)){
 			CommitBean cb = new CommitBean();

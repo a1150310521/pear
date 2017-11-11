@@ -15,14 +15,14 @@ import java.util.*;
 import java.io.*;
 import java.sql.*;
 
-public class AJAXtest extends ActionSupport{
+public class AddProject extends ActionSupport{
   private ProjectBean project;
   private List<ProjectBean> proList;
   
   //×´Ì¬Âë
   private String state;
   
-  public AJAXtest(){
+  public AddProject(){
     System.out.println("ajax strut");
     project = new ProjectBean();
     proList = new ArrayList<ProjectBean>();

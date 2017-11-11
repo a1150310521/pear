@@ -1,11 +1,9 @@
- <%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
-<%@ taglib prefix="s" uri="/struts-tags" %>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Insert title here</title>
+<title>用户主页</title>
 <link rel="stylesheet" href="statics/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 <style type="text/css">
 	.iactive{
@@ -28,7 +26,6 @@
 	}
 </style>
 </head>
-<body>
 <body>
 <!-- head -->
 	<div id="head">
@@ -152,61 +149,47 @@
 
 
 
+	
+
+
 
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="statics/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 	var focusPackage;
 	//载入时
-	(function(){
-		var ipackages;
-		$.ajax({
-			url : "aj/getpackages.action",
-			type: "post",
-			dataType: "json",
-			success: function(data){
-				ipackages = JSON.parse(data)["packages"];
-				console.log(ipackages);
-				for(var i = 0 ; i < ipackages.length ;i++){
-					$("#newpackage").before("<li >"+ipackages[i]+"</li>");
-				}
-				
-				
-				if(ipackages.length>0){
-					$("#packagelist li:first-child").addClass("iactive");
-					focusPackage = $("#packagelist li:first-child").text();
-					
-					$.ajax({
-						url : "aj/packageProjects.action",
-						type: "post",
-						dataType : "json",
-						data : {
-							packagename : ipackages[0]
-						},
-						success : function(data){
-							var projects = JSON.parse(data)["projects"];
-
-							for(var i =0 ; i<projects.length;i++){
-								var project = projects[i];
-								var studentNames = [];
-								for(var j =0 ;j<project.students.length;j++){
-									studentNames[j] =  project.students[j].name;
-								}
-
-								var href = "https://github.com/" + project.repomaster +"/" + project.reponame ;
-
-								$('#projectlist tbody').append(
-									"<tr><td>" +project.projectname+"</td><td><a href=\'"
-									+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
-							}
-						}
-					});
-				}
-			}
-		});
+	// window.onload=function(){
+	// 	var packages
+	// 	$.ajax({
+	// 		url : "aj/getpackages.action",
+	// 		type: "post",
+	// 		dataType: "json",
+	// 		success: function(data){
+	// 			packages = JSON.parse(data)["packages"];
+	// 			for(var i = 0 ; i < packages.length ;i++){
+	// 				$("#newpackage").before("<li>"+packages[i]+"</li>");
+	// 			}
+	// 		}
+	// 	});
 		
-		
-	})();
+
+	// 	if(packages.length>=1){
+	// 		$("#packagelist:first-child").addClass("iactive");
+	// 		focusPackage = $("#packagelist:first-child").text();
+	// 		$.ajax({
+	// 			url : "aj/packageProjects.action",
+	// 			type: "post",
+	// 			dataType : "json",
+	// 			data : {
+	// 				packagename : packages[0];
+	// 			},
+	// 			success : function(data){
+	// 				var projects = JSON.parse(data);
+
+	// 			}
+	// 		});
+	// 	}
+	// };
 	
 	//新建包
 	$("#newpackage button").click(function(){
@@ -231,15 +214,12 @@
 		}
 		
 		
-	});
+	})
 
-	
 	//选中包并展示包内项目
-	$("#packagelist").delegate("li","click",function(){
-		
+	$("#packagelist li").click(function(){
 		if($(this).attr('id')!='newpackage'){
-			
-			$(this).addClass('iactive').siblings().removeClass('iactive');
+			$(this).addClass('active').siblings().removeClass('active');
 
 			var packagename = $(this).text();
 			focusPackage = packagename;
@@ -251,22 +231,8 @@
 					packagename : packagename
 				},
 				success : function(data){
-					var projects = JSON.parse(data)["projects"];
-					
-					$('#projectlist tbody').html("");
-
-					for(var i =0 ; i<projects.length;i++){
-						var project = projects[i];
-						var studentNames = [];
-						for(var j =0 ;j<project.students.length;j++){
-							studentNames[j] =  project.students[j].name;
-						}
-						var href = "https://github.com/" + project.repomaster +"/" + project.reponame ;
-
-						$('#projectlist tbody').append(
-							"<tr><td>" +project.projectname+"</td><td><a href=\'"
-							+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
-					}
+					alert(data);
+					var projects = JSON.parse(data);
 
 				}
 			});
@@ -314,29 +280,14 @@
 			studentNames[i] = student.name;
 		}
 		project.students = studentList;
-		//alert(JSON.stringify(project));
+		
 		// ajax传回后台
 		$.ajax({
-			url : "aj/addOneProject.action",
+			url : "aj/addProject.action",
 			type:"post",
 			dataType: "json",
 			data : {
-				"project.projectname" : projectname.value,
-				"project.reponame" : reponame.value,
-				"project.repomaster" : repomaster.value,
-				"project.packagename" : focusPackage,
-				"project.students[0].id": studentList[0].id,
-				"project.students[0].name": studentList[0].name,
-				"project.students[0].githubname": studentList[0].githubname,
-				
-				"project.students[1].id": studentList[1].id,
-				"project.students[1].name": studentList[1].name,
-				"project.students[1].githubname": studentList[1].githubname,
-				
-				"project.students[2].id": studentList[2].id,
-				"project.students[2].name": studentList[2].name,
-				"project.students[2].githubname": studentList[2].githubnames
-				
+				project : JSON.stringify(project);
 			},
 			success:function(){
 				$('.form-background').hide();
@@ -347,10 +298,6 @@
 					+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
 			}
 		});
-	});
-
-	$("#projectlist tbody").delegate("tr","click",function(){
-		alert($(this).html());
 	});
 </script>
 </body>
