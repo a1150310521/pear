@@ -45,5 +45,16 @@ public class FileTuility {
     }
     return true;
   }
+  
+  public static int countFiles(String dir){
+    File file = new File(dir);
+    if(!file.exists()){
+      return 0;
+    }
+    if(file.isDirectory()){
+      return file.listFiles().length;
+    }
+    return 0;
+  }
 
 }

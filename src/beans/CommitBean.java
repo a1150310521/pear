@@ -5,7 +5,9 @@ public class CommitBean {
 	private Date date;
 	private String commiter;
 	private String message;
-	private int changedLines;
+	private int addLines;
+	private int deleLines;
+	private int changedFiles;
 
 
 	// setter
@@ -20,9 +22,15 @@ public class CommitBean {
 	public void setMessage(String message){
 		this.message = message;
 	}
-	public void setChangedLines(int total){
-		this.changedLines = total;
+	public void setAddLines(int total){
+		this.addLines = total;
 	}
+	public void setDeleLines(int total){
+      this.deleLines = total;
+    }
+	public void setChangedFiles(int total){
+      this.changedFiles = total;
+    }
 
 
 	// getter
@@ -36,7 +44,13 @@ public class CommitBean {
 	public String getMessage(){
 		return this.message;
 	}
-	public int getChangedLines(){
-		return this.changedLines;
+	public int getAddLines(){
+		return this.addLines;
 	}
+	public int getDeleLines(){
+      return this.deleLines;
+    }
+	public int getChangedFiles(){
+      return this.changedFiles;
+    }
 }

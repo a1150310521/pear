@@ -19,10 +19,21 @@
 	#ground>*{
 		display:none;
 	}
+	#canvas{
+		position: relative;
+	}
+	.tag{
+		position:absolute;
+		background-color: rgba(0,0,0,0.8);
+		display: inline-block;
+		border-radius: 3px;
+		color:white;
+	}
 
 </style>
 </head>
 <body>
+	 
 <!-- nav bar -->
 	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
 		<div class="navbar-header">
@@ -31,7 +42,7 @@
 
 		<ul class="nav navbar-nav navbar-right">
 			<li class="dropdown">
-				<a class="dropdown-toggle" data-toggle="dropdown"><s:property value="#session.username"/>MUSHROOM<span class="caret"></span></a>
+				<a class="dropdown-toggle" data-toggle="dropdown"><s:property value="#session.username"/><span class="caret"></span></a>
 				<ol class="dropdown-menu">
 					<li><a href="userhome.jsp">我的主页</a></li>
 					<li class="nav-divider"></li>
@@ -44,8 +55,8 @@
 
 <!-- header include projectname ,students msg -->
 	<div id="head-bar">
-		<h1>GITHUB项目跟踪系统</h1>
-		<div>1150310502 张雅姗 BokunoMasayume,1150310502 张雅姗 BokunoMasayume,1150310502 张雅姗 BokunoMasayume</div>
+		<h1></h1>
+		<div></div>
 		<hr/>
 	</div>
 
@@ -64,7 +75,9 @@
 
 <!-- work place -->
 	<div id='ground'>
-		<canvas id="line-chart"></canvas>
+		<div id="canvas">
+			<canvas id="line-chart"></canvas>
+		</div>
 
 		<div id="contribution-rate">
 			<div class="form-group">
@@ -103,7 +116,7 @@
 	
 	// 获取url参数对象
 	var params = (function(){
-		var url = location.href;
+		var url = decodeURI(location.href);
 		var paraString = url.substring(url.indexOf("?")+1,url.length).split("&");
 		var result = {};
 		for(var i=0;i<paraString.length;i++){
@@ -112,7 +125,10 @@
 		}
 		return result;
 	})();
-	alert(params['reponame']);
+	
+	// 填充页面头部
+	$("#head-bar>h1").html(params["projectname"]);
+	$("#head-bar>div").html(params["studentMsgs"]);
 
 	// 获取应对不同操作的方法
 	var page = (function(){
@@ -132,20 +148,48 @@
 						repomaster : params["repomaster"]
 					},
 					success : function(data){
-						// commitList = JSON.parse(data);
-						alert(JSON.stringify(data));
+						commitList = data;
+						var xValues = [];
+						var yValues = [];
+						var msg = [];
+						for(var i =0 ;i<data.length;i++){
+							var commit = data[i];
+							xValues[i] = new Date(commit["date"]);
+							yValues[i] = parseInt(commit["addLines"])+parseInt(commit["deleLines"]);
+							
+							msg[i]="提交者:"+commit["commiter"]+"<br/>提交信息:"+commit["message"]+"<br/>提交时间:"+commit["date"]+"<br/>"+commit["changedFiles"]+" files changed,"+commit["addLines"]+"(+),"+commit["deleLines"]+"(-)";
+						}
+						
+						canvas.height = window.innerHeight * 0.5;
+						canvas.width = window.innerWidth * 0.8;
+						
+						var chart = new LineChart(xValues,yValues,msg);
+						chart.setPer(canvas).drawAxis(ctx).createCircles(canvas).drawLines(ctx).renderCircles(ctx);
+						$('#canvas').show().siblings().hide();
+						
+						$("#line-chart").mousemove(function(e){
+							var cir = chart.circles;
+							var c = document.getElementById("line-chart");
+							for(var i = 0;i<cir.length;i++){
+								if(cir[i].hasPoint(e.pageX-getX(c) , e.pageY - getY(c))){
+									cir[i].showMsg();
+								}else{
+									cir[i].removeMsg();
+								}
+							}
+						});
 					}
 				});
 			
-
-			// 画图
 		}
+
+
 
 
 		// 成员贡献率
 		var contributionRate  = function(){
 			$('#contribution-rate').show().siblings().hide();
-			if(commitList==[]){
+			if(commitList[0]==undefined){
 				$.ajax({
 					url : "aj/getCommits.action",
 					type : 'post',
@@ -155,7 +199,7 @@
 						repomaster : params["repomaster"]
 					},
 					success : function(data){
-						commitList = JSON.parse(data);
+						commitList = data;
 						alert(commitList);
 					}
 				});
@@ -179,7 +223,7 @@
 	$('#func-nav li').click(function(){
 		$(this).addClass('active').siblings().removeClass('active');
 		var req = $(this).text();
-		alert("text:"+req);
+		
 		page[req]();
 		
 	});
@@ -188,6 +232,8 @@
 	$('#startDate').change(function(){
 		
 	});
+
+
 
 
 

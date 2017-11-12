@@ -55,7 +55,7 @@ public class RepoAllCommits {
 		for(RepositoryCommit repoCom : comSer.getCommits(repo)){
 			CommitBean cb = new CommitBean();
 			repoCom = comSer.getCommit(repo, repoCom.getSha());
-			cb.setChangedLines(repoCom.getStats().getTotal());
+//			cb.setChangedLines(repoCom.getStats().getTotal());
 			
 			
 			cb.setDate(repoCom.getCommit().getCommitter().getDate());

@@ -188,16 +188,16 @@
 
 							for(var i =0 ; i<projects.length;i++){
 								var project = projects[i];
-								var studentNames = [];
+								var studentMsgs = [];
 								for(var j =0 ;j<project.students.length;j++){
-									studentNames[j] =  project.students[j].name;
+									studentMsgs[j] =  project.students[j].id+" "+project.students[j].name+" "+project.students[j].githubname;
 								}
 
 								var href = "https://github.com/" + project.repomaster +"/" + project.reponame ;
 
 								$('#projectlist tbody').append(
 									"<tr><td>" +project.projectname+"</td><td><a href=\'"
-									+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
+									+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
 							}
 						}
 					});
@@ -257,15 +257,15 @@
 
 					for(var i =0 ; i<projects.length;i++){
 						var project = projects[i];
-						var studentNames = [];
+						var studentMsgs = [];
 						for(var j =0 ;j<project.students.length;j++){
-							studentNames[j] =  project.students[j].name;
+							studentMsgs[j] =  project.students[j].id+" "+project.students[j].name+" "+project.students[j].githubname;
 						}
 						var href = "https://github.com/" + project.repomaster +"/" + project.reponame ;
 
 						$('#projectlist tbody').append(
 							"<tr><td>" +project.projectname+"</td><td><a href=\'"
-							+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
+							+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
 					}
 
 				}
@@ -300,7 +300,7 @@
 		project.packagename = focusPackage;
 
 		var studentList = [];
-		var studentNames = [];
+		var studentMsgs = [];
 		for(var i=0 ; i<students.length;i++){
 			var student = new Object();
 			var stuDom = students[i];
@@ -311,7 +311,7 @@
 
 			studentList[i] = student;
 
-			studentNames[i] = student.name;
+			studentMsgs[i] =  student.id+" "+student.name+" "+student.githubname;
 		}
 		project.students = studentList;
 		//alert(JSON.stringify(project));
@@ -335,7 +335,7 @@
 				
 				"project.students[2].id": studentList[2].id,
 				"project.students[2].name": studentList[2].name,
-				"project.students[2].githubname": studentList[2].githubnames
+				"project.students[2].githubname": studentList[2].githubname
 				
 			},
 			success:function(){
@@ -344,13 +344,18 @@
 
 				$('#projectlist tbody').append(
 					"<tr><td>" +project.projectname+"</td><td><a href=\'"
-					+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
+					+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
 			}
 		});
 	});
 
 	$("#projectlist tbody").delegate("tr","click",function(){
-		alert($(this).html());
+		var href = $(this.getElementsByTagName("td")[1]).text();
+		var msgs = href.split("/");
+		var go = location.href;
+		var str = go.slice(0,go.lastIndexOf('/')+1) + "repocommits.jsp?reponame=" + msgs[msgs.length-1] 
+		  + "&repomaster=" + msgs[msgs.length-2]+"&studentMsgs="+$(this.getElementsByTagName("td")[2]).text()+"&projectname="+$(this.getElementsByTagName("td")[0]).text();
+		location.href = encodeURI(str);
 	});
 </script>
 </body>

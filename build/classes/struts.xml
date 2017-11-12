@@ -65,7 +65,7 @@
     		</result>
     	</action>
     	
-    	<action name="getCommits" class="actions.RepoAllCommits">
+    	<action name="getCommits" class="actions.AllCommits">
     		<result name="success" type="json">
     			<param name="root">commitList</param>
     		</result>
