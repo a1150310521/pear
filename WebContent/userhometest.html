@@ -6,299 +6,187 @@
 <title>用户主页</title>
 <link rel="stylesheet" href="statics/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 <style type="text/css">
-	.iactive{
-		color:red;
+	#head-bar{
+		padding:0 10px;
 	}
-	.form-background{
+	#ground{
+		margin:10px 30px;
+	}
+	#ground>*{
 		display:none;
-		background-color: rgba(0,0,0,0.8);
-		position:fixed;
-		left:0;
-		top:0;
-		height:100%;
-		width:100%;
-		padding:5% 20%;
 	}
-	.form{
-		background-color: #FFF;
-		padding:5%;
-		border-radius: 5px;
-	}
+
 </style>
 </head>
 <body>
-<!-- head -->
-	<div id="head">
-		<h2>MUSHROOM</h2>
+<!-- nav bar -->
+	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
+		<div class="navbar-header">
+			<a class="navbar-brand">PEAR</a>
+		</div>
+
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown"><s:property value="#session.username"/>MUSHROOM<span class="caret"></span></a>
+				<ol class="dropdown-menu">
+					<li><a href="userhome.jsp">我的主页</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="logout.action">登出</a></li>
+				</ol>
+			</li>
+		</ul>
+	</div>
+
+
+<!-- header include projectname ,students msg -->
+	<div id="head-bar">
+		<h1>GITHUB项目跟踪系统</h1>
+		<div>1150310502 张雅姗 BokunoMasayume,1150310502 张雅姗 BokunoMasayume,1150310502 张雅姗 BokunoMasayume</div>
 		<hr/>
 	</div>
 
 
-<!-- project list -->
-	<div style="float:left;width:70%;margin-right: 30px;" id="projectlist">
-		<div style="float:right;margin-bottom: 20px;">
-			<button id="showAddFormBTN" class="btn default">添加</button>
-<!-- 添加项目 -->
-			<div class="form-background">
-				<div class="form">
-					<form class="form-horizontal">
-					<div class="form-group">
-    					<label class="control-label col-sm-4" for="projectname">项目名称</label>
-    					<div class="col-sm-6">
-      						<input type="text" id="projectname" class="form-control" placeholder="项目名称">
-    					</div>
-  					</div>
 
-  					<div class="form-group">
-    					<label class="control-label col-sm-4" for="reponame">仓库名字</label>
-    					<div class="col-sm-6">
-      						<input type="text" id="reponame" class="form-control" placeholder="仓库名字">
-    					</div>
-  					</div>
+<!-- func nav -->
+	<ol id="func-nav" class="nav nav-tabs nav-justified">
+		<li><a>历史提交情况</a></li>
+		<li><a>成员贡献率</a></li>
+		<li><a>分支情况</a></li>
+		<li><a>成员协作情况</a></li>
+		<li><a>个性化工作分析</a></li>
+		<li><a>提交目的分析</a></li>
+	</ol>
 
-  					<div class="form-group">
-  						<label class="control-label col-sm-4" for="repomaster">仓库所有者</label>
-  						<div class="col-sm-6">
-  							<input type="text" id="repomaster" class="form-control" placeholder="仓库所有者">
-  						</div>
-  					</div>
 
-  					<h2 style="text-align:center">学生信息</h2>
-  						<div class="student form-group">
-  							<div class="col-sm-1"></div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-id" placeholder="id"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-name" placeholder="name"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class=" form-control student-githubname" placeholder="githubname"/>
-  							</div>
+<!-- work place -->
+	<div id='ground'>
+		<canvas id="line-chart"></canvas>
 
-  						</div>
+		<div id="contribution-rate">
+			<div class="form-group">
+				<label class="control-label col-sm-1 col-sm-offset-2" for="startDate">开始日期</label>
+				<div class="col-sm-3">
+					<select class="form-control" id="startDate">
+						<option value=''>-请选择-</option>
+					</select>
+				</div>
 
-  						<div class="student form-group">
-  							<div class="col-sm-1"></div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-id" placeholder="id"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-name" placeholder="name"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class=" form-control student-githubname" placeholder="githubname"/>
-  							</div>
-
-  						</div>
-
-  						<div class="student form-group">
-  							<div class="col-sm-1"></div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-id" placeholder="id"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class="form-control student-name" placeholder="name"/>
-  							</div>
-  							<div class="col-sm-3 ">
-  								<input type="text"  class=" form-control student-githubname" placeholder="githubname"/>
-  							</div>
-
-  						</div>
-
-  						<div style="padding-left: 25%;">
-  							<div style="width:50%" class="btn btn-primary" id="addProjectBTN">添&nbsp;加</div>
-  						</div>
-  						
-
-					</form>
+				<label class="control-label col-sm-1 col-sm-offset-1">结束日期</label>
+				<div class="col-sm-3">
+					<select class="form-control" id="endDate">
+						<option value=''>-请选择-</option>
+					</select>
 				</div>
 			</div>
-			<button id="addBlukProjectsBTN" class="btn default">批量添加</button>
-<!-- 批量添加表单 -->
+
+			<canvas id="rate-pie"></canvas>
 
 		</div>
 
-		<table class="table table-hover">
-			<thead>
-				<tr>
-					<th>项目</th>
-					<th>github地址</th>
-					<th>参与学生</th>
-				</tr>
-			</thead>
-			<tbody>
-				
-			</tbody>
-		</table>
+		<canvas id="branchPicture"></canvas>
+
+
 	</div>
-
-
-<!-- package list -->
-	<ul  id="packagelist">
-		<!-- packages... -->
-
-		<!-- new package -->
-		<li id="newpackage">
-			<div>
-				<input type="text" name="packagename" spaceholder="新建分类名字"/>
-				<button>新建分类</button>
-			</div>
-		</li>
-	</ul>
-
-
-
-	
 
 
 
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="statics/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="statics/js/linechart.js"></script>
 <script type="text/javascript">
-	var focusPackage;
-	//载入时
-	// window.onload=function(){
-	// 	var packages
-	// 	$.ajax({
-	// 		url : "aj/getpackages.action",
-	// 		type: "post",
-	// 		dataType: "json",
-	// 		success: function(data){
-	// 			packages = JSON.parse(data)["packages"];
-	// 			for(var i = 0 ; i < packages.length ;i++){
-	// 				$("#newpackage").before("<li>"+packages[i]+"</li>");
-	// 			}
-	// 		}
-	// 	});
-		
 
-	// 	if(packages.length>=1){
-	// 		$("#packagelist:first-child").addClass("iactive");
-	// 		focusPackage = $("#packagelist:first-child").text();
-	// 		$.ajax({
-	// 			url : "aj/packageProjects.action",
-	// 			type: "post",
-	// 			dataType : "json",
-	// 			data : {
-	// 				packagename : packages[0];
-	// 			},
-	// 			success : function(data){
-	// 				var projects = JSON.parse(data);
-
-	// 			}
-	// 		});
-	// 	}
-	// };
-	
-	//新建包
-	$("#newpackage button").click(function(){
-		var newName = $("#newpackage button").prev().val();  
-		var flag = true;
-		// 判断新建包名字是否可用
-
-		// ajax提交
-		if(flag){
-			$.ajax({
-				url : "aj/addPackage.action",
-				type : "post",
-				dataType : "json",
-				data : {
-					packagename : newName
-				},
-				success : function(){
-					// 新包添加到位
-					$("#newpackage").before("<li>"+newName+"</li>");
-				}
-			});
+	var commitList = [];
+	// 获取url参数对象
+	var params = (function(){
+		var url = location.href;
+		var paraString = url.substring(url.indexOf("?")+1,url.length).split("&");
+		var result = {};
+		for(var i=0;i<paraString.length;i++){
+			var str = paraString[i];
+			result[str.substring(0,str.indexOf("="))] = str.substring(str.indexOf("=")+1,str.length);
 		}
-		
-		
-	})
+		return result;
+	})();
 
-	//选中包并展示包内项目
-	$("#packagelist li").click(function(){
-		if($(this).attr('id')!='newpackage'){
-			$(this).addClass('active').siblings().removeClass('active');
+	// 获取应对不同操作的方法
+	var page = (function(){
+		// 历史提交情况
+		var commitsLineChart = function(){
+			$('#line-chart').show().siblings().hide();
 
-			var packagename = $(this).text();
-			focusPackage = packagename;
-			$.ajax({
-				url : "aj/packageProjects.action",
-				type: "post",
-				dataType : "json",
-				data : {
-					packagename : packagename
-				},
-				success : function(data){
-					alert(data);
-					var projects = JSON.parse(data);
+			var canvas = document.getElementById('line-chart');
+			var ctx = canvas.getContext('2d');
 
-				}
-			});
-		}
-	});
-
-	$('#showAddFormBTN').click(function(){
-		$(this).next().show();
-	});
-
-	$('.form-background').click(function(){
-		$(this).hide();
-	});
-	$('.form').click(function(event){
-		event.stopPropagation();
-	});
-
-	$('#addProjectBTN').click(function(event){
-		event.stopPropagation();
-		
-		var reponame = document.getElementById("reponame");
-		var repomaster = document.getElementById("repomaster");
-		var projectname = document.getElementById("projectname");
-		var students = document.getElementsByClassName("student");
-		// 检查输入是否合法
-		
-		var project = new Object();
-		project.projectname = projectname.value;
-		project.reponame = reponame.value;
-		project.repomaster = repomaster.value;
-		project.packagename = focusPackage;
-
-		var studentList = [];
-		var studentNames = [];
-		for(var i=0 ; i<students.length;i++){
-			var student = new Object();
-			var stuDom = students[i];
-			
-			student.id = stuDom.getElementsByClassName("student-id")[0].value;
-			student.name = stuDom.getElementsByClassName("student-name")[0].value;
-			student.githubname = stuDom.getElementsByClassName("student-githubname")[0].value;
-
-			studentList[i] = student;
-
-			studentNames[i] = student.name;
-		}
-		project.students = studentList;
-		
-		// ajax传回后台
-		$.ajax({
-			url : "aj/addProject.action",
-			type:"post",
-			dataType: "json",
-			data : {
-				project : JSON.stringify(project);
-			},
-			success:function(){
-				$('.form-background').hide();
-				var href = "https://github.com/" + project.repomaster +"/" + project.reponame ;
-
-				$('#projectlist tbody').append(
-					"<tr><td>" +project.projectname+"</td><td><a href=\'"
-					+href+"\'>"+href+"</a></td><td>"+studentNames.join()+"</td></tr>");
+			if(commitList==[]){
+				$.ajax({
+					url : "aj/getCommits.action",
+					type : 'post',
+					dataType : 'json',
+					data : {
+						reponame : params["reponame"],
+						repomaster : params["repomaster"]
+					},
+					success : function(data){
+						commitList = JSON.parse(data);
+						alert(commitList);
+					}
+				});
 			}
-		});
+
+			// 画图
+		}
+
+
+		// 成员贡献率
+		var contributionRate  = function(){
+			$('#contribution-rate').show().siblings().hide();
+			if(commitList==[]){
+				$.ajax({
+					url : "aj/getCommits.action",
+					type : 'post',
+					dataType : 'json',
+					data : {
+						reponame : params["reponame"],
+						repomaster : params["repomaster"]
+					},
+					success : function(data){
+						commitList = JSON.parse(data);
+						alert(commitList);
+					}
+				});
+			}
+		}
+
+		// 分支情况
+		var branchPic = function(){
+			$('#branchPicture').show().siblings().hide();
+
+		}
+
+		return {
+			'历史提交情况' : commitsLineChart,
+			'成员贡献率' : contributionRate,
+			'分支情况' : branchPic
+		}
+
+	})();
+
+	$('#func-nav li').click(function(){
+		$(this).addClass('active').siblings().removeClass('active');
+		var req = $(this).text();
+
+		page[req]();
+		
 	});
+
+	// 下拉菜单事件
+	$('#startDate').change(function(){
+		
+	});
+
+
+
+
 </script>
 </body>
 </html>

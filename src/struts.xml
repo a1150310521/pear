@@ -50,7 +50,7 @@
     		</result>
     	</action>
     	
-    	<action name="addOneProject" class="actions.AddProject" >
+    	<action name="addOneProject" class="actions.AddProject" method="AddOne">
     		<result name="success" type="json">
     		</result>
     		<result name="error" type="json">
@@ -65,6 +65,11 @@
     		</result>
     	</action>
     	
+    	<action name="getCommits" class="actions.RepoAllCommits">
+    		<result name="success" type="json">
+    			<param name="root">commitList</param>
+    		</result>
+    	</action>
     	
     </package>
 </struts>

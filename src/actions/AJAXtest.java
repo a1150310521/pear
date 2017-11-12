@@ -1,5 +1,9 @@
 package actions;
 
+import java.io.BufferedReader;    
+import java.io.IOException;    
+import java.io.InputStreamReader;  
+
 import java.util.ArrayList;   
 import java.util.List;
 import java.util.HashMap;  
@@ -15,90 +19,74 @@ import java.util.*;
 import java.io.*;
 import java.sql.*;
 
-public class AJAXtest extends ActionSupport{
-  private ProjectBean project;
-  private List<ProjectBean> proList;
+public class AJAXtest {
   
-  //״̬��
-  private String state;
-  
-  public AJAXtest(){
-    System.out.println("ajax strut");
-    project = new ProjectBean();
-    proList = new ArrayList<ProjectBean>();
-    System.out.println("ajax strut");
+
+  public static void gitClone(String dir){
+  	try{
+  		Process process =  Runtime.getRuntime().exec("git clone https://github.com/a1150310521/pear",null,new File(dir));
+  		BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
+  		String line = "";
+  		while((line = input.readLine())!=null){
+  			System.out.println(line);
+  		}
+  		System.out.println("git clone over");
+  	}catch(IOException e){
+  		e.printStackTrace();
+  	}
   }
-  
-  public void setState(String a){
-    this.state = a;
-  }
-  public String getState(){
-    return this.state;
-  }
-  
-  public void setProList(List<ProjectBean> a){
-    this.proList = a;
-  }
-  public List<ProjectBean> getProList(){
-    return this.proList;
-  }
-  public void setProject(ProjectBean a){
-    this.project = a;
-  }
-  public ProjectBean getProject(){
-    return this.project;
-  }
-  
-  public String execute() throws Exception{
-    System.out.println("ajax addproject");
-    try{
-      String user = ActionContext.getContext().getSession().get("username").toString();
-      System.out.println(user+'1');
-      if(!user.equals("")){
-        this.project.setUsername(user);
-      
-        Connection conn = DBconnect.getConnection();
-        String sql = "insert into Project(projectname,reponame,repomaster,username,packagename) values(?,?,?,?,?)";
-        PreparedStatement ps = conn.prepareStatement(sql);
-        ps.setString(1, this.project.getProjectname());
-        ps.setString(2, this.project.getReponame());
-        ps.setString(3, this.project.getRepomaster());
-        ps.setString(4, this.project.getUsername());
-        ps.setString(5, this.project.getPackagename());
-        
-        ps.executeUpdate();
-        ps.close();
-        
-        List<StudentBean> stuList = this.project.getStudents();
-        sql = "insert into Student(id,name,githubname,reponame,repomaster,leadername) values(?,?,?,?,?,?)";
-        for(int i =0 ;i<stuList.size() ;i++){
-          ps = conn.prepareStatement(sql);
-          ps.setString(1,stuList.get(i).getId());
-          ps.setString(2, stuList.get(i).getName());
-          ps.setString(3, stuList.get(i).getGithubname());
-          ps.setString(4, this.project.getReponame());
-          ps.setString(5, this.project.getRepomaster());
-          ps.setString(6, project.getUsername());
-          
-          ps.executeUpdate();
-          ps.close();
-        }
-        conn.close();
-        this.state = "success";
-        return "success";
-      }
-      else{
-        this.state = "logout";
-        return "logout";
-      }
-    }catch(Exception e){
+  //鑾峰彇褰撳墠鐩綍
+  public static String getCurrentDir(){
+  	try{
+  		File dir = new File(".");
+  		return dir.getCanonicalPath();
+  	}catch(IOException e){
       e.printStackTrace();
-      this.state = "error";
-      return "error";
+      return "//fail";
     }
-    
   }
-  
+
+  //鏂板缓鏂囦欢鐩綍
+  public static boolean createDir(String dir){
+  	boolean result = false;
+  	File file = new File(dir);
+  	if(!file.exists()){
+  		result = file.mkdirs();
+  	}
+  	return result;
+  }
+
+  //鍒犻櫎鐩綍鍙婁笅闈㈡墍鏈夋枃浠�
+  public static boolean deleteDir(String dir){
+    
+  	File file = new File(dir);
+  	if(!file.exists()){
+  		return false;
+  	}
+
+  	if(file.isFile()){
+  		file.delete();
+  	}
+  	else if(file.isDirectory()){
+  		File[]  files = file.listFiles();
+  		for(File i:files){
+  			deleteDir(i.getAbsolutePath());
+  		}
+  		file.delete();
+  	}
+  	return true;
+  }
+
+  public static void main(String args[]){
+    String dir = getCurrentDir();
+    
+    dir += "\\testuser";
+   
+    createDir(dir);
+    gitClone(dir);
+    System.out.println("start deleete");
+     deleteDir(dir);
+  }
 
 }
 

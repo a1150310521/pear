@@ -32,7 +32,7 @@
 <body>
 <!-- head -->
 	<div id="head">
-		<h2>MUSHROOM</h2>
+		<h2><s:property value="#session.username"/></h2>
 		<hr/>
 	</div>
 

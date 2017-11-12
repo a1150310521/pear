@@ -49,7 +49,7 @@ public class AddProject extends ActionSupport{
     return this.project;
   }
   
-  public String execute() throws Exception{
+  public String AddOne() throws Exception{
     System.out.println("ajax addproject");
     try{
       String user = ActionContext.getContext().getSession().get("username").toString();
