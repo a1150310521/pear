@@ -26,6 +26,9 @@
 		padding:5%;
 		border-radius: 5px;
 	}
+	.dele-btn{
+		display: none;
+	}
 </style>
 </head>
 <body>
@@ -56,6 +59,7 @@
 <!-- project list -->
 	<div style="float:left;width:70%;margin-right: 30px;" id="projectlist">
 		<div style="float:right;margin-bottom: 20px;">
+			<button id="showDeleBTN" class="btn default">删除</button>
 			<button id="showAddFormBTN" class="btn default">添加</button>
 <!-- 添加项目 -->
 			<div class="form-background">
@@ -184,7 +188,7 @@
 				ipackages = JSON.parse(data)["packages"];
 				console.log(ipackages);
 				for(var i = 0 ; i < ipackages.length ;i++){
-					$("#newpackage").before("<li >"+ipackages[i]+"</li>");
+					$("#newpackage").before("<li ><span>"+ipackages[i]+"</span><button class=\'btn-xs dele-btn btn btn-primary\'>删除</button></li>");
 				}
 				
 				
@@ -213,7 +217,7 @@
 
 								$('#projectlist tbody').append(
 									"<tr><td>" +project.projectname+"</td><td><a href=\'"
-									+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
+									+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td><td class=\'dele-btn btn btn-primary\'>删除</td></tr>");
 							}
 						}
 					});
@@ -241,7 +245,7 @@
 				},
 				success : function(){
 					// 新包添加到位
-					$("#newpackage").before("<li>"+newName+"</li>");
+					$("#newpackage").before("<li><span>"+newName+"</span><button class=\'btn-xs dele-btn btn btn-primary\'>删除</button></li>");
 				}
 			});
 		}
@@ -257,7 +261,8 @@
 			
 			$(this).addClass('iactive').siblings().removeClass('iactive');
 
-			var packagename = $(this).text();
+			var packagename = $(this).children('span').text();
+			// alert(packagename);
 			focusPackage = packagename;
 			$.ajax({
 				url : "aj/packageProjects.action",
@@ -281,13 +286,28 @@
 
 						$('#projectlist tbody').append(
 							"<tr><td>" +project.projectname+"</td><td><a href=\'"
-							+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
+							+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td><td class=\'dele-btn btn btn-primary\'>删除</td></tr>");
 					}
 
 				}
 			});
 		}
 	});
+
+    // this is worry 
+    // but i still donot know why
+    // i ll finish it later
+	// $('#showDeleBTN').toggle(function(){
+	// 	$('.dele-btn').show();
+	// },
+	// function(){
+	// 	$('.dele-btn').hide();
+	// });
+	$('#showDeleBTN').click(function(){
+		
+		$('.dele-btn').toggle(500);
+	});
+
 
 	$('#showAddFormBTN').click(function(){
 		$(this).next().show();
@@ -360,7 +380,7 @@
 
 				$('#projectlist tbody').append(
 					"<tr><td>" +project.projectname+"</td><td><a href=\'"
-					+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td></tr>");
+					+href+"\'>"+href+"</a></td><td>"+studentMsgs.join()+"</td><td class=\'dele-btn btn btn-primary\'>删除</td></tr>");
 			}
 		});
 	});
@@ -372,6 +392,47 @@
 		var str = go.slice(0,go.lastIndexOf('/')+1) + "repocommits.jsp?reponame=" + msgs[msgs.length-1] 
 		  + "&repomaster=" + msgs[msgs.length-2]+"&studentMsgs="+$(this.getElementsByTagName("td")[2]).text()+"&projectname="+$(this.getElementsByTagName("td")[0]).text();
 		location.href = encodeURI(str);
+	});
+
+	$('#projectlist tbody').delegate(".dele-btn","click",function(event){
+		event.stopPropagation();
+
+		var href = $(this).prev().prev().text();
+		var msgs = href.split("/");
+		
+		var $tr = $(this).parent();
+		$.ajax({
+			url : "aj/deleProject.action",
+			type : 'post',
+			dataType : 'json',
+			data : {
+				repomaster: msgs[msgs.length-2],
+				reponame : msgs[msgs.length-1] ,
+				projectname : $(this).prev().prev().prev().text()
+			},
+			success:function(){
+				$tr.remove();
+			}
+		});
+
+	});
+
+	$("#packagelist").delegate(".dele-btn","click",function(event){
+		event.stopPropagation();
+
+		var packagename = $(this).prev().text();
+		var $li = $(this).parent();
+		$.ajax({
+			url:"aj/delePackage.action",
+			type:'post',
+			dataType:'json',
+			data:{
+				packagename:packagename
+			},
+			success:function(){
+				$li.remove();
+			}
+		});
 	});
 </script>
 </body>
