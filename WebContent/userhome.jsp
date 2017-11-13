@@ -29,7 +29,23 @@
 </style>
 </head>
 <body>
-<body>
+  <!-- nav bar -->
+	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
+		<div class="navbar-header">
+			<a  href="index.jsp" class="navbar-brand">PEAR</a>
+		</div>
+
+		<ul class="nav navbar-nav navbar-right">
+			<li class="dropdown">
+				<a class="dropdown-toggle" data-toggle="dropdown"><s:property value="#session.username"/><span class="caret"></span></a>
+				<ol class="dropdown-menu">
+					<li><a href="userhome.jsp">我的主页</a></li>
+					<li class="nav-divider"></li>
+					<li><a href="logout.action">登出</a></li>
+				</ol>
+			</li>
+		</ul>
+	</div>
 <!-- head -->
 	<div id="head">
 		<h2><s:property value="#session.username"/></h2>

@@ -44,7 +44,7 @@
 <!-- nav bar -->
 	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
 		<div class="navbar-header">
-			<a class="navbar-brand">PEAR</a>
+			<a  href="index.jsp" class="navbar-brand">PEAR</a>
 		</div>
 
 		<ul class="nav navbar-nav navbar-right">
@@ -163,7 +163,7 @@
 					success : function(data){
 						// alert(JSON.stringify(data));
 						console.log(JSON.stringify(data));
-						
+
 						commitList = data.reverse();
 						var xValues = [];
 						var yValues = [];
@@ -384,7 +384,7 @@
 				$('#branch').show();
 			}
 
-
+			// alert(JSON.stringify(commitList));
 
 		}
 
