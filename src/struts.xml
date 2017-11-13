@@ -71,5 +71,15 @@
     		</result>
     	</action>
     	
+    	<action name="delePackage" class="actions.DeleteAction" method="deletePackage">
+    		<result name="success" type="json">
+    		</result>
+    	</action>
+    	
+    	<action name="deleProject" class="actions.DeleteAction" method="deleteProject">
+    		<result name="success" type="json">
+    		</result>
+    	</action>
+    	
     </package>
 </struts>
