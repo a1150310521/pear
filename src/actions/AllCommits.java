@@ -33,6 +33,7 @@ public class AllCommits extends ActionSupport{
     private String repomaster;
     private String reponame;
     private List<CommitBean> commitList;
+    
 
     
     public String getRepomaster(){
@@ -152,6 +153,7 @@ public class AllCommits extends ActionSupport{
         String dir = connect.FileTuility.getCurrentDir();
         //@dir user path
         dir = dir + "\\gitfiles"+"\\"+user;
+        System.out.println(dir);
         //@dir1 repomaster path
         String dir1  = dir+"\\"+this.repomaster;
         //@repoDir repo path

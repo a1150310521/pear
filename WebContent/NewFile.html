@@ -6,14 +6,15 @@
 </head>
 <body>
 <canvas id="myChart" width="400" height="400"></canvas>
-<script src="statics/Chart.min.js"></script>
-<script src="statics/Chart.bundle.min.js"></script>
+<script src="statics/js/Chart.min.js"></script>
+<script src="statics/js/Chart.bundle.min.js"></script>
  <canvas id="canvas" height="450" width="600"></canvas>
 
 
     <script>
 
         var lineChartData = {
+            type:'line',
 　　　　　　　// x轴的标示
             labels : ["January","February","March","April","May","June","July"],
 　　　　　　　// 数据，数组中的每一个object代表一条线
@@ -43,7 +44,7 @@
             
         }
 
-    var myLine = new Chart(document.getElementById("canvas").getContext("2d")).Line(lineChartData);
+    var myLine = new Chart(document.getElementById("myChart").getContext("2d"),lineChartData);
     
     </script>
 </body>

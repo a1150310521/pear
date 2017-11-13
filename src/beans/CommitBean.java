@@ -1,6 +1,7 @@
 package beans;
 import java.util.Date;
-
+import java.util.ArrayList;   
+import java.util.List;
 public class CommitBean {
 	private Date date;
 	private String commiter;
@@ -8,6 +9,23 @@ public class CommitBean {
 	private int addLines;
 	private int deleLines;
 	private int changedFiles;
+	
+	private String sha;
+	private List<String> fatherSha;
+	
+	public void setSha(String a){
+	  this.sha = a;
+	}
+	public String getSha(){
+	  return this.sha;
+	}
+	
+	public void setFatherSha(List<String> a){
+	  this.fatherSha = a;
+	}
+	public List<String> getFatherSha(){
+	  return this.fatherSha;
+	}
 
 
 	// setter

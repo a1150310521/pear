@@ -83,20 +83,19 @@
 			<div class="form-group">
 				<label class="control-label col-sm-1 col-sm-offset-2" for="startDate">开始日期</label>
 				<div class="col-sm-3">
-					<select class="form-control" id="startDate">
-						<option value=''>-请选择-</option>
-					</select>
+					<input class="form-control" placeholder="format=yyyy-mm-dd" id="startDate"/>
 				</div>
 
 				<label class="control-label col-sm-1 col-sm-offset-1">结束日期</label>
 				<div class="col-sm-3">
-					<select class="form-control" id="endDate">
-						<option value=''>-请选择-</option>
-					</select>
+					<input placeholder="format=yyyy-mm-dd" class="form-control" id="endDate"/>
 				</div>
-			</div>
-
+			</div><br/><br/><br/>
+			<h3 style="text-align: center;">成员贡献情况</h3>
 			<canvas id="rate-pie"></canvas>
+			<hr/>
+			<h3 style="text-align: center;">成员贡献率</h3>
+			<canvas id = "contribute-radar"></canvas>
 
 		</div>
 
@@ -109,6 +108,9 @@
 
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="statics/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="statics/js/Chart.bundle.min.js"></script>
+<script src="statics/js/Chart.min.js"></script>
+
 <script src="statics/js/linechart.js"></script>
 <script type="text/javascript">
 
@@ -160,6 +162,11 @@
 							msg[i]="提交者:"+commit["commiter"]+"<br/>提交信息:"+commit["message"]+"<br/>提交时间:"+commit["date"]+"<br/>"+commit["changedFiles"]+" files changed,"+commit["addLines"]+"(+),"+commit["deleLines"]+"(-)";
 						}
 						
+						ctx.save();
+						ctx.fillStyle="#ffffff";
+						ctx.fillRect(0,0,canvas.width,canvas.height);
+						ctx.restore();
+
 						canvas.height = window.innerHeight * 0.5;
 						canvas.width = window.innerWidth * 0.8;
 						
@@ -188,7 +195,7 @@
 
 		// 成员贡献率
 		var contributionRate  = function(){
-			$('#contribution-rate').show().siblings().hide();
+			$('#contribution-rate').siblings().hide();
 			if(commitList[0]==undefined){
 				$.ajax({
 					url : "aj/getCommits.action",
@@ -200,9 +207,11 @@
 					},
 					success : function(data){
 						commitList = data;
-						alert(commitList);
+						$('#contribution-rate').show();
 					}
 				});
+			}else{
+				$('#contribution-rate').show();
 			}
 		}
 
@@ -229,8 +238,117 @@
 	});
 
 	// 下拉菜单事件
-	$('#startDate').change(function(){
-		
+	$('#startDate,#endDate').change(function(){
+		var dateformat = /^(19|20)\d{2}-(0?[1-9]|1[0-2])-(0?[1-9]|[1-2][0-9]|30|31)$/;
+		var start = $('#startDate').val();
+		var end = $("#endDate").val();
+		if(dateformat.test(start) && dateformat.test(end)){
+			//  draw on canvas
+			var canvas = document.getElementById("rate-pie");
+			var ctx = canvas.getContext('2d');
+
+			canvas.height = window.innerHeight * 0.5;
+			canvas.width = window.innerWidth * 0.8;
+
+			var startDate = new Date(Date.parse(start));
+			var endDate = new Date(Date.parse(end));
+			// 擦黑板
+			ctx.save();
+			ctx.fillStyle="#ffffff";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.restore();
+
+
+			
+
+			var dataset = [];
+			var students = params["studentMsgs"].split(",");
+			var studentObjList = [];
+			// get students object list
+			// init datasets
+			for(var i=0 ;i<students.length;i++){
+				var perStu = students[i].split(" ");
+				studentObjList[i] =  new Object();
+				studentObjList[i]["id"] = perStu[0];
+				studentObjList[i]["name"] = perStu[1];
+				studentObjList[i]["githubname"] = perStu[2];
+
+				studentObjList[i]["addLines"] = 0;
+				studentObjList[i]["deleLines"] = 0;
+				studentObjList[i]['changedFiles'] = 0;
+				studentObjList[i]['commitCount'] = 0;
+
+
+				dataset[i] = new Object();
+				dataset[i]["label"] = studentObjList[i]["name"];
+				// dataset[i]["my-id"] = studentObjList[i]["githubname"];
+				dataset[i]["data"] = [0,0,0,0,0];
+			}
+			// bianli all commits
+			for(var i =0;i<commitList.length;i++){
+				var theCommit = commitList[i];
+				var commitDate = new Date(theCommit["date"]);
+				if(startDate.getTime()<=commitDate.getTime() && commitDate.getTime()<=endDate.getTime()){
+					// 在时间范围内
+					for(var j=0;j<studentObjList.length;j++){
+						if(theCommit["commiter"].toLowerCase() == studentObjList[j]["githubname"].toLowerCase()){
+							var dataList = dataset[j]["data"];
+
+							dataList[0] += parseInt(theCommit["addLines"]);
+							dataList[1] += parseInt(theCommit["deleLines"]);
+							dataList[2] += parseInt(theCommit["changedFiles"]);
+							dataList[3] ++;
+							dataList[4] = dataList[0] + dataList[1];
+
+							dataset[j]["data"] = dataList;
+
+
+						}
+					}
+				}
+			}
+	
+			var radarChart = new Chart(ctx, {
+    			type: 'radar',
+    			data: {
+      				labels: ["累计增加代码" ,"累计删除代码","累计修改文件数目","提交次数","累计修改代码"],
+        			datasets :dataset
+
+    			},
+    			options: {
+        
+    			}
+			});
+
+			var pie = document.getElementById("contribute-radar");
+			var pieCtx = pie.getContext("2d");
+			pie.height = window.innerHeight * 0.5;
+			pie.width = window.innerWidth * 0.8;
+
+
+			var pieLaber = [];
+			var pieDataset = [];
+			pieDataset[0] = new Object();
+			pieDataset[0]["data"] = [];
+			for(var i = 0;i<dataset.length;i++){
+				pieLaber[i] = dataset[i]["label"];
+				pieDataset[0]["data"][i] = dataset[i]["data"][4] ;
+				
+			}
+
+			var pieChart = new Chart(pieCtx,{
+				type : 'doughnut',
+				data :{
+				datasets: pieDataset,
+				labels: pieLaber
+			}
+			 });
+			
+
+
+
+		} //日期合法
+
 	});
 
 
