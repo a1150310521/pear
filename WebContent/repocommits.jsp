@@ -19,11 +19,18 @@
 	#ground>*{
 		display:none;
 	}
-	#canvas{
+	#canvas {
 		position: relative;
 	}
-	.tag{
+	#canvas .tag{ 
 		position:absolute;
+		background-color: rgba(0,0,0,0.8);
+		display: inline-block;
+		border-radius: 3px;
+		color:white;
+	}
+	#branch .tag{
+		position:fixed;
 		background-color: rgba(0,0,0,0.8);
 		display: inline-block;
 		border-radius: 3px;
@@ -99,7 +106,9 @@
 
 		</div>
 
-		<canvas id="branchPicture"></canvas>
+		<div id = "branch">
+		    <canvas id="branchPicture"></canvas>
+		</div>
 
 
 	</div>
@@ -113,6 +122,8 @@
 
 <script src="statics/js/linechart.js"></script>
 <script type="text/javascript">
+
+	// class  
 
 	var commitList = [];
 	
@@ -150,7 +161,10 @@
 						repomaster : params["repomaster"]
 					},
 					success : function(data){
-						commitList = data;
+						// alert(JSON.stringify(data));
+						console.log(JSON.stringify(data));
+						
+						commitList = data.reverse();
 						var xValues = [];
 						var yValues = [];
 						var msg = [];
@@ -162,14 +176,16 @@
 							msg[i]="提交者:"+commit["commiter"]+"<br/>提交信息:"+commit["message"]+"<br/>提交时间:"+commit["date"]+"<br/>"+commit["changedFiles"]+" files changed,"+commit["addLines"]+"(+),"+commit["deleLines"]+"(-)";
 						}
 						
+						
+
+						canvas.height = window.innerHeight * 0.5;
+						canvas.width = window.innerWidth * 0.8;
+
 						ctx.save();
 						ctx.fillStyle="#ffffff";
 						ctx.fillRect(0,0,canvas.width,canvas.height);
 						ctx.restore();
 
-						canvas.height = window.innerHeight * 0.5;
-						canvas.width = window.innerWidth * 0.8;
-						
 						var chart = new LineChart(xValues,yValues,msg);
 						chart.setPer(canvas).drawAxis(ctx).createCircles(canvas).drawLines(ctx).renderCircles(ctx);
 						$('#canvas').show().siblings().hide();
@@ -206,7 +222,7 @@
 						repomaster : params["repomaster"]
 					},
 					success : function(data){
-						commitList = data;
+						commitList = data.reverse();
 						$('#contribution-rate').show();
 					}
 				});
@@ -215,9 +231,160 @@
 			}
 		}
 
+
+		// draw branch picture
+		var drawTree = function(){
+			// make a tree struct
+			var commitTree = [];
+			for(var i=0;i<commitList.length;i++){
+				commitTree[i] = new Object();
+				commitTree[i]["sha"] = commitList[i]["sha"];
+				commitTree[i]["commiter"] = commitList[i]["commiter"];
+				commitTree[i]["date"] = commitList[i]["date"];
+				commitTree[i]["isFather"] = false;
+				commitTree[i]["fathers"] = [];
+
+				commitTree[i]["bigBro"]=1;
+				commitTree[i]["floor"]=0;
+
+				var fathers = commitList[i]["fatherSha"];
+				for(var j=0 ; j<fathers.length;j++){
+					var fSha = fathers[j];
+					for(var k=0;k<i;k++){
+						if(commitTree[k]["sha"]==fSha){
+							// find father object
+							var pos = commitTree[i]["fathers"].length;
+							commitTree[i]["fathers"][pos] = commitTree[k];
+							commitTree[i]["isFather"] = true;
+							break;
+						}
+					}
+				}
+
+			}
+
+
+			// calc every node's floor and bigBro and add msg box
+			var pa = document.getElementById('branch');
+			for(var i = 0;i<commitTree.length;i++){
+				var node = commitTree[i];
+				var fatherList = commitTree[i]["fathers"];
+				var floor = 0;
+				for(var j = 0;j<fatherList.length;j++){
+
+					if(fatherList[j]["floor"] > floor){
+						floor = fatherList[j]["floor"];
+					}
+				}
+				commitTree[i]["floor"] = floor+1;
+
+				if(i>0){
+					for(var k = i-1;k>=0;k--){
+						if(commitTree[k]["floor"]==(floor+1)){
+							commitTree[i]["bigBro"] = commitTree[k]["bigBro"]+1;
+							break;
+						}
+					}
+				}
+
+				commitTree[i]["box"] = document.createElement('div');
+				commitTree[i]["box"].innerHTML = "commiter:"+commitTree[i]["commiter"]+
+					"<br/>提交日期:"+commitTree[i]["date"]
+					+"<br/>SHA:"+commitTree[i]["sha"];
+				$(commitTree[i]["box"]).addClass('tag');
+				pa.appendChild(commitTree[i]["box"]);
+
+			}
+			// alert(JSON.stringify(commitTree));
+			console.log(JSON.stringify(commitTree));
+			// draw
+			var padleft = 50;
+			var padtop = 50;
+
+			var canvas = document.getElementById("branchPicture");
+			var ctx = canvas.getContext('2d');
+			canvas.height = padtop*commitTree.length;
+			canvas.width = window.innerWidth * 0.8;
+						
+			ctx.save();
+			ctx.fillStyle="#ffffff";
+			ctx.fillRect(0,0,canvas.width,canvas.height);
+			ctx.restore();
+
+
+			
+
+			for(var i=0;i<commitTree.length;i++){
+				var node = commitTree[i];
+				var x = padleft * node["bigBro"];
+				var y = padtop * node["floor"];
+
+				for(var j=0;j<node["fathers"].length;j++){
+					var f = node["fathers"][j];
+
+					ctx.save();
+					ctx.strokeStyle = "rgba(64,198,222,1)";
+					ctx.beginPath();
+					ctx.moveTo(padleft*f["bigBro"] , padtop*f["floor"]);
+					ctx.lineTo(x,y);
+					ctx.stroke();
+					ctx.restore();
+				}
+
+				ctx.save();
+				ctx.fillStyle = "#18A1BE";
+				ctx.translate(x,y);
+				ctx.beginPath();
+        		ctx.arc(0,0,5,0,Math.PI*2);
+        		ctx.fill();
+        		ctx.restore();
+
+			}
+
+			$('#branchPicture').mousemove(function(e){
+				for(var i=0;i<commitTree.length;i++){
+					var node = commitTree[i];
+
+					var x = padleft * node["bigBro"];
+					var y = padtop * node["floor"];
+					var l =(x+getX(canvas)-e.pageX)*(x+getX(canvas)-e.pageX)+(y+getY(canvas)-e.pageY)*(y+getY(canvas)-e.pageY); 
+					if(l<25){
+						$(node["box"]).css('top',e.pageY).css('left',e.pageX).show();
+					}else{
+						$(node["box"]).hide();
+					}
+				}
+			});
+
+
+
+
+		}
 		// 分支情况
 		var branchPic = function(){
-			$('#branchPicture').show().siblings().hide();
+			$('#branch').siblings().hide();
+			if(commitList[0]==undefined){
+				$.ajax({
+					url : "aj/getCommits.action",
+					type : 'post',
+					dataType : 'json',
+					data : {
+						reponame : params["reponame"],
+						repomaster : params["repomaster"]
+					},
+					success : function(data){
+						commitList = data.reverse();
+						drawTree();
+						$('#branch').show();
+					}
+				});
+			}
+			else{
+				drawTree();
+				$('#branch').show();
+			}
+
+
 
 		}
 

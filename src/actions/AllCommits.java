@@ -63,7 +63,7 @@ public class AllCommits extends ActionSupport{
       
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       String[] formatMsg = line.split("&");
-      for(int i=0;i<3;i++){
+      for(int i=0;i<5;i++){
         String[] temp = formatMsg[i].split("=");
         if(i==0){
           cb.setCommiter(temp[1]);
@@ -80,6 +80,22 @@ public class AllCommits extends ActionSupport{
         
         if(i==2){
           cb.setMessage(temp[1]);
+        }
+        
+        if(i==3){
+          cb.setSha(temp[1]);
+        }
+        if(i==4){
+          List<String> fa = new ArrayList<String>();
+          if(temp.length>1){
+            String[] fathers = temp[1].split(" ");
+            for(int j=0;j<fathers.length;j++){
+              fa.add(fathers[j]);
+            }
+          }
+          
+          
+          cb.setFatherSha(fa);
         }
       }
       return cb;
@@ -104,51 +120,11 @@ public class AllCommits extends ActionSupport{
     }
     
     
-//    public static void main(String args[]){
-//      try{
-//        String dir = connect.FileTuility.getCurrentDir();
-//        dir += "\\testuser";
-//        String dir1  = dir+"\\a1150310502";
-//        String repoDir = dir1;
-//        repoDir += "\\pear";
-//        connect.FileTuility.createDir(dir1);
-//        Process process =  Runtime.getRuntime().exec("git clone https://github.com/a1150310521/pear",null,new File(dir1));
-//        process.waitFor();
-//        //BufferedReader input0 = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//        System.out.println("cloned");
-//        process = Runtime.getRuntime().exec("git log --all --shortstat --date=iso --pretty=format:\"commiter=%cn&date=%cd&msg=%s\"",null,new File(repoDir));
-//        BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
-//        String line = "";
-//        
-//        int i = 0;
-//        while((line = input.readLine())!=null){
-//          i++;
-//          if(i%3==1){
-//            parseLineOne(line);
-//          }
-//          if(i%3==2){
-//            int a = Integer.parseInt(line);
-//            System.out.println("munber :"+a);
-//          }
-//            System.out.println(line+"  "+i);
-//           SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-//            Date date = sdf.parse("2017-10-30 23:35:16");
-//            System.out.println("date  "+date);
-//        }
-//        
-//        connect.FileTuility.deleteDir(dir);
-//        
-//        }catch(ParseException e){
-//          e.printStackTrace();
-//        }catch(IOException e){
-//          e.printStackTrace();
-//        }catch(InterruptedException e){
-//          e.printStackTrace();
-//        }
-//    }
+
 
     public String execute() throws Exception{
       String user = ActionContext.getContext().getSession().get("username").toString();
+      
       try{
         String dir = connect.FileTuility.getCurrentDir();
         //@dir user path
@@ -163,7 +139,7 @@ public class AllCommits extends ActionSupport{
         process.waitFor();
         //BufferedReader input0 = new BufferedReader(new InputStreamReader(process.getInputStream()));
         System.out.println("cloned");
-        process = Runtime.getRuntime().exec("git log --all --shortstat --date=iso --pretty=format:\"commiter=%cn&date=%cd&msg=%s\"",null,new File(repoDir));
+        process = Runtime.getRuntime().exec("git log --all --shortstat --date=iso --pretty=format:\"commiter=%cn&date=%cd&msg=%s&sha=%h&fatherSha=%p\"",null,new File(repoDir));
         BufferedReader input = new BufferedReader(new InputStreamReader(process.getInputStream()));
         String line = "";
         
@@ -180,11 +156,12 @@ public class AllCommits extends ActionSupport{
           cb = parseLineTwo(cb,line);
           commitList.add(cb);
           line = input.readLine();
+          
            
         }
         
         //user dir has too many files ,delete 
-        if(connect.FileTuility.countFiles(dir)>10){
+        if(connect.FileTuility.countFiles(dir)>1){
           connect.FileTuility.deleteDir(dir);
         }
         

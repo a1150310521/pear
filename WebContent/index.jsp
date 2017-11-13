@@ -20,23 +20,7 @@
 <button id = "ajax" >AJAX</button>
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script>
-$(function(){
-$("#ajax").click(function(){
-	$.ajax({
-		url:"aj/ajaxtest.action",
-		type:"post",
-		dataType:"json",
-		data:{
-			username:"mushroom"
-			
-		},
-		
-		success:function (data){
-			alert(JSON.parse(data)["repos"][0]["projectname"]);
-		}
-	});
-});
-});
+
 </script>
 </body>
 </html>
