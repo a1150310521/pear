@@ -63,9 +63,11 @@ public class AllCommits extends ActionSupport{
       
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       String[] formatMsg = line.split("&");
+      System.out.println("line 1: "+line);
       for(int i=0;i<5;i++){
         String[] temp = formatMsg[i].split("=");
         if(i==0){
+//          System.out.println(temp.length);
           cb.setCommiter(temp[1]);
         }
         
@@ -145,25 +147,34 @@ public class AllCommits extends ActionSupport{
         
         int i = 0;
         commitList = new ArrayList<CommitBean>();
+        int flag = 0;
         
         while((line = input.readLine())!=null){
           CommitBean cb = new CommitBean();
-          
+          commitList.add(cb);
           cb = parseLineOne(cb,line);
           
           line = input.readLine();
+          while(line.startsWith("commiter=")){
+            
+            CommitBean cb2 = new CommitBean();
+            commitList.add(cb2);
+            cb2 = parseLineOne(cb2,line);
+            line = input.readLine();
+          }
           
           cb = parseLineTwo(cb,line);
-          commitList.add(cb);
-          line = input.readLine();
           
+          line = input.readLine();
+         
+           
            
         }
         
         //user dir has too many files ,delete 
-        if(connect.FileTuility.countFiles(dir)>10){
+//        if(connect.FileTuility.countFiles(dir)>10){
           connect.FileTuility.deleteDir(dir);
-        }
+//        }
         
         
         }catch(IOException e){

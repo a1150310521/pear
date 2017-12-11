@@ -10,6 +10,7 @@
 <title>用户主页</title>
 <link rel="stylesheet" href="statics/bootstrap-3.3.7-dist/css/bootstrap.min.css">
 <style type="text/css">
+
 	#head-bar{
 		padding:0 10px;
 	}
@@ -82,6 +83,9 @@
 
 <!-- work place -->
 	<div id='ground'>
+
+      <canvas id="loading"></canvas>
+
 		<div id="canvas">
 			<canvas id="line-chart"></canvas>
 		</div>
@@ -119,7 +123,7 @@
 <script src="statics/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
 <script src="statics/js/Chart.bundle.min.js"></script>
 <script src="statics/js/Chart.min.js"></script>
-
+<script src="statics/js/loading.js"></script>
 <script src="statics/js/linechart.js"></script>
 <script type="text/javascript">
 
@@ -147,7 +151,7 @@
 	var page = (function(){
 		// 历史提交情况
 		var commitsLineChart = function(){
-			$('#line-chart').show().siblings().hide();
+			$('#loading').show().siblings().hide();
 
 			var canvas = document.getElementById('line-chart');
 			var ctx = canvas.getContext('2d');
@@ -161,6 +165,7 @@
 						repomaster : params["repomaster"]
 					},
 					success : function(data){
+            $('#line-chart').show().siblings().hide();
 						// alert(JSON.stringify(data));
 						console.log(JSON.stringify(data));
 
@@ -211,7 +216,8 @@
 
 		// 成员贡献率
 		var contributionRate  = function(){
-			$('#contribution-rate').siblings().hide();
+			// $('#contribution-rate').siblings().hide();
+      $('#loading').show().siblings().hide();
 			if(commitList[0]==undefined){
 				$.ajax({
 					url : "aj/getCommits.action",
@@ -223,11 +229,11 @@
 					},
 					success : function(data){
 						commitList = data.reverse();
-						$('#contribution-rate').show();
+						$('#contribution-rate').show().siblings().hide();
 					}
 				});
 			}else{
-				$('#contribution-rate').show();
+				$('#contribution-rate').show().siblings().hide();
 			}
 		}
 
@@ -363,7 +369,8 @@
 		}
 		// 分支情况
 		var branchPic = function(){
-			$('#branch').siblings().hide();
+			// $('#branch').siblings().hide();
+      $('#loading').show().siblings().hide();
 			if(commitList[0]==undefined){
 				$.ajax({
 					url : "aj/getCommits.action",
@@ -376,13 +383,13 @@
 					success : function(data){
 						commitList = data.reverse();
 						drawTree();
-						$('#branch').show();
+						$('#branch').show().siblings().hide();
 					}
 				});
 			}
 			else{
 				drawTree();
-				$('#branch').show();
+				$('#branch').show().siblings().hide();
 			}
 
 			// alert(JSON.stringify(commitList));
