@@ -59,6 +59,13 @@
     		</result>
     	</action>
     	
+    	<action name="addProjects" class="actions.AddProject" method="AddBluk">
+    		<result name="success" type="json">
+    		</result>
+    		<result name="none" type="json">
+    		</result>
+    	</action>
+    	
     	<action name="getpackages" class="actions.UserPackages" >
     		<result name="success" type="json">
     			<param name="root">packages</param>

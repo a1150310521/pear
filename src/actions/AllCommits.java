@@ -161,7 +161,7 @@ public class AllCommits extends ActionSupport{
         }
         
         //user dir has too many files ,delete 
-        if(connect.FileTuility.countFiles(dir)>1){
+        if(connect.FileTuility.countFiles(dir)>10){
           connect.FileTuility.deleteDir(dir);
         }
         

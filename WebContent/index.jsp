@@ -5,13 +5,12 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta charset="utf-8"> 
+  <meta charset="utf-8">
   <title>PEAR</title>
-  <link rel="stylesheet" href="statics/bootstrap-3.3.7-dist/css/bootstrap.min.css"> 
-  <link rel="stylesheet" type="text/css" href="statics/css/index.css"> 
+  <link rel="stylesheet" href="statics/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="statics/css/index.css">
 </head>
 <body>
-
   <!-- nav bar -->
 	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
 		<div class="navbar-header">
@@ -31,11 +30,11 @@
 	</div>
 
 <div class="site-wrapper">
-	
+
   <div class="site-wrapper-inner">
-  
+
     <div class="cover-container">
-      
+
 
 
 
@@ -78,7 +77,7 @@
                                           <input name="email" id="email" type="email" class="form-control"  placeholder="邮 箱">
                                         </div>
                                         <div class="form-group">
-                                              
+
 
                                             <button type="submit" class="btn btn-default">注 册</button>
                                             </div>
@@ -110,21 +109,21 @@
                                           <a href="#" class="fa fa-question-circle"></a>
                                         </div>
                                         <div class="form-group">
-                                              
+
 
                                             <button type="submit" class="btn btn-default">登 录</button>
                                             </div>
                                           </form>
                                       </div>
                                     </div>
-                                 
+
               </div>
             </div>
           </div>
         </div>
 </s:else>
       </div>
-      
+
     </div>
   </div>
 </div>

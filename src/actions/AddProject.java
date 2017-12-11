@@ -49,6 +49,20 @@ public class AddProject extends ActionSupport{
     return this.project;
   }
   
+  
+  public String AddBluk() throws Exception{
+    System.out.println("ajax add Bluk projects");
+    if(this.proList.size() == 0){
+      return "none";
+    }
+    for(int i=0 ; i < proList.size() ; i++){
+      this.project = this.proList.get(i);
+      AddOne();
+    }
+    return "success";
+  }
+  
+  
   public String AddOne() throws Exception{
     System.out.println("ajax addproject");
     try{

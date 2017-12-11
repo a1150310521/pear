@@ -22,7 +22,7 @@
 	#canvas {
 		position: relative;
 	}
-	#canvas .tag{ 
+	#canvas .tag{
 		position:absolute;
 		background-color: rgba(0,0,0,0.8);
 		display: inline-block;
@@ -40,7 +40,7 @@
 </style>
 </head>
 <body>
-	 
+
 <!-- nav bar -->
 	<div style="border-radius: 0;padding-right: 10px;" class="navbar navbar-inverse">
 		<div class="navbar-header">
@@ -123,10 +123,10 @@
 <script src="statics/js/linechart.js"></script>
 <script type="text/javascript">
 
-	// class  
+	// class
 
 	var commitList = [];
-	
+
 	// 获取url参数对象
 	var params = (function(){
 		var url = decodeURI(location.href);
@@ -138,7 +138,7 @@
 		}
 		return result;
 	})();
-	
+
 	// 填充页面头部
 	$("#head-bar>h1").html(params["projectname"]);
 	$("#head-bar>div").html(params["studentMsgs"]);
@@ -151,7 +151,7 @@
 
 			var canvas = document.getElementById('line-chart');
 			var ctx = canvas.getContext('2d');
-			
+
 				$.ajax({
 					url : "aj/getCommits.action",
 					type : 'post',
@@ -172,11 +172,11 @@
 							var commit = data[i];
 							xValues[i] = new Date(commit["date"]);
 							yValues[i] = parseInt(commit["addLines"])+parseInt(commit["deleLines"]);
-							
+
 							msg[i]="提交者:"+commit["commiter"]+"<br/>提交信息:"+commit["message"]+"<br/>提交时间:"+commit["date"]+"<br/>"+commit["changedFiles"]+" files changed,"+commit["addLines"]+"(+),"+commit["deleLines"]+"(-)";
 						}
-						
-						
+
+
 
 						canvas.height = window.innerHeight * 0.5;
 						canvas.width = window.innerWidth * 0.8;
@@ -189,7 +189,7 @@
 						var chart = new LineChart(xValues,yValues,msg);
 						chart.setPer(canvas).drawAxis(ctx).createCircles(canvas).drawLines(ctx).renderCircles(ctx);
 						$('#canvas').show().siblings().hide();
-						
+
 						$("#line-chart").mousemove(function(e){
 							var cir = chart.circles;
 							var c = document.getElementById("line-chart");
@@ -203,7 +203,7 @@
 						});
 					}
 				});
-			
+
 		}
 
 
@@ -305,14 +305,14 @@
 			var ctx = canvas.getContext('2d');
 			canvas.height = padtop*commitTree.length;
 			canvas.width = window.innerWidth * 0.8;
-						
+
 			ctx.save();
 			ctx.fillStyle="#ffffff";
 			ctx.fillRect(0,0,canvas.width,canvas.height);
 			ctx.restore();
 
 
-			
+
 
 			for(var i=0;i<commitTree.length;i++){
 				var node = commitTree[i];
@@ -347,9 +347,10 @@
 
 					var x = padleft * node["bigBro"];
 					var y = padtop * node["floor"];
-					var l =(x+getX(canvas)-e.pageX)*(x+getX(canvas)-e.pageX)+(y+getY(canvas)-e.pageY)*(y+getY(canvas)-e.pageY); 
+					//console.log($(window).scrollLeft()+"  top:"+$(window).scrollTop());
+					var l =(x+getX(canvas)-e.pageX)*(x+getX(canvas)-e.pageX)+(y+getY(canvas)-e.pageY)*(y+getY(canvas)-e.pageY);
 					if(l<25){
-						$(node["box"]).css('top',e.pageY).css('left',e.pageX).show();
+						$(node["box"]).css('top',e.pageY-$(window).scrollTop()).css('left',e.pageX-$(window).scrollLeft()).show();
 					}else{
 						$(node["box"]).hide();
 					}
@@ -399,9 +400,9 @@
 	$('#func-nav li').click(function(){
 		$(this).addClass('active').siblings().removeClass('active');
 		var req = $(this).text();
-		
+
 		page[req]();
-		
+
 	});
 
 	// 下拉菜单事件
@@ -426,7 +427,7 @@
 			ctx.restore();
 
 
-			
+
 
 			var dataset = [];
 			var students = params["studentMsgs"].split(",");
@@ -474,7 +475,7 @@
 					}
 				}
 			}
-	
+
 			var radarChart = new Chart(ctx, {
     			type: 'radar',
     			data: {
@@ -483,7 +484,7 @@
 
     			},
     			options: {
-        
+
     			}
 			});
 
@@ -500,7 +501,7 @@
 			for(var i = 0;i<dataset.length;i++){
 				pieLaber[i] = dataset[i]["label"];
 				pieDataset[0]["data"][i] = dataset[i]["data"][4] ;
-				
+
 			}
 
 			var pieChart = new Chart(pieCtx,{
@@ -510,7 +511,7 @@
 				labels: pieLaber
 			}
 			 });
-			
+
 
 
 

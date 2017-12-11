@@ -29,6 +29,18 @@
 	.dele-btn{
 		display: none;
 	}
+  .file{
+    position: relative;
+    display:inline-block;
+    overflow: hidden;
+
+  }
+  .file input{
+    position :absolute;
+    right:0;
+    top:0;
+    opacity: 0;
+  }
 </style>
 </head>
 <body>
@@ -132,12 +144,14 @@
   						<div style="padding-left: 25%;">
   							<div style="width:50%" class="btn btn-primary" id="addProjectBTN">添&nbsp;加</div>
   						</div>
-  						
+
 
 					</form>
 				</div>
 			</div>
-			<button id="addBlukProjectsBTN" class="btn default">批量添加</button>
+			<button id="addBlukProjectsBTN" class="file btn default">
+        <input type="file" onchange="importf(this)"/>批量添加
+      </button>
 <!-- 批量添加表单 -->
 
 		</div>
@@ -151,7 +165,7 @@
 				</tr>
 			</thead>
 			<tbody>
-				
+
 			</tbody>
 		</table>
 	</div>
@@ -175,6 +189,7 @@
 
 <script src="http://libs.baidu.com/jquery/2.1.4/jquery.min.js"></script>
 <script src="statics/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+<script src="statics/js/xlsx.full.min.js"></script>
 <script type="text/javascript">
 	var focusPackage;
 	//载入时
@@ -190,12 +205,12 @@
 				for(var i = 0 ; i < ipackages.length ;i++){
 					$("#newpackage").before("<li ><span>"+ipackages[i]+"</span><button class=\'btn-xs dele-btn btn btn-primary\'>删除</button></li>");
 				}
-				
-				
+
+
 				if(ipackages.length>0){
 					$("#packagelist li:first-child").addClass("iactive");
-					focusPackage = $("#packagelist li:first-child").text();
-					
+					focusPackage = $("#packagelist li:first-child").children('span').text();
+
 					$.ajax({
 						url : "aj/packageProjects.action",
 						type: "post",
@@ -224,13 +239,95 @@
 				}
 			}
 		});
-		
-		
+
+
 	})();
-	
+
+  //导入EXCEL
+  function importf(obj){
+    var wb;
+    if(!obj.files){
+      return;
+    }
+    var f = obj.files[0];
+    if("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"!=f.type){
+      alert("请确保文件类型为xlsx");
+      return ;
+    }
+    var reader = new FileReader();
+    reader.onload = function(e){
+      var data = e.target.result;
+      wb = XLSX.read(data,{
+        type:"binary"
+      });
+
+      var importJSON = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+      // 导入的json
+
+      var jud = confirm("确定导入吗？");
+      if(jud==false){
+        return;
+      }
+
+      var ajaxData = {};
+      for(var i = 0 ; i < importJSON.length ; i++){
+        ajaxData["proList["+i+"].projectname"] = importJSON[i]["项目名称"];
+        var proURL = importJSON[i]["项目地址"];
+        proURL = proURL.split('/');
+        if(proURL[proURL.length-1] == ""){
+          ajaxData["proList["+i+"].reponame"] = proURL[proURL.length - 2];
+          ajaxData["proList["+i+"].repomaster"] = proURL[proURL.length - 3];
+        }
+        else{
+          ajaxData["proList["+i+"].reponame"] = proURL[proURL.length - 1];
+          ajaxData["proList["+i+"].repomaster"] = proURL[proURL.length - 2];
+        }
+        ajaxData["proList["+i+"].packagename"] = focusPackage;
+
+        ajaxData["proList["+i+"].students[0].id"] = importJSON[i]["组员1学号"];
+        ajaxData["proList["+i+"].students[0].name"] = importJSON[i]["组员1姓名"];
+        ajaxData["proList["+i+"].students[0].githubname"] = importJSON[i]["组员1github账号"];
+
+        ajaxData["proList["+i+"].students[1].id"] = importJSON[i]["组员2学号"];
+        ajaxData["proList["+i+"].students[1].name"] = importJSON[i]["组员2姓名"];
+        ajaxData["proList["+i+"].students[1].githubname"] = importJSON[i]["组员2github账号"];
+
+        ajaxData["proList["+i+"].students[2].id"] = importJSON[i]["组员3学号"];
+        ajaxData["proList["+i+"].students[2].name"] = importJSON[i]["组员3姓名"];
+        ajaxData["proList["+i+"].students[2].githubname"] = importJSON[i]["组员3github账号"];
+
+
+      }
+
+      $.ajax({
+        url : "aj/addProjects.action",
+        type : "post",
+        dataType : "json",
+        data : ajaxData,
+        success : function(){
+          for(var i = 0  ; i < importJSON.length ; i++){
+            $('#projectlist tbody').append(
+    					"<tr><td>" +importJSON[i]["项目名称"]+"</td><td><a href=\'"
+    					+importJSON[i]["项目地址"]+"\'>"+importJSON[i]["项目地址"]+"</a></td><td>"+
+              importJSON[i]["组员1学号"]+" "+importJSON[i]["组员1姓名"]+" "+importJSON[i]["组员1github账号"]+","+
+              importJSON[i]["组员2学号"]+" "+importJSON[i]["组员2姓名"]+" "+importJSON[i]["组员2github账号"]+","+
+              importJSON[i]["组员3学号"]+" "+importJSON[i]["组员3姓名"]+" "+importJSON[i]["组员3github账号"]+
+              "</td><td class=\'dele-btn btn btn-primary\'>删除</td></tr>");
+          }
+
+        }
+      });
+
+    };//onload
+
+    reader.readAsBinaryString(f);
+
+
+  }
+
 	//新建包
 	$("#newpackage button").click(function(){
-		var newName = $("#newpackage button").prev().val();  
+		var newName = $("#newpackage button").prev().val();
 		var flag = true;
 		// 判断新建包名字是否可用
 
@@ -249,16 +346,16 @@
 				}
 			});
 		}
-		
-		
+
+
 	});
 
-	
+
 	//选中包并展示包内项目
 	$("#packagelist").delegate("li","click",function(){
-		
+
 		if($(this).attr('id')!='newpackage'){
-			
+
 			$(this).addClass('iactive').siblings().removeClass('iactive');
 
 			var packagename = $(this).children('span').text();
@@ -273,7 +370,7 @@
 				},
 				success : function(data){
 					var projects = JSON.parse(data)["projects"];
-					
+
 					$('#projectlist tbody').html("");
 
 					for(var i =0 ; i<projects.length;i++){
@@ -294,7 +391,7 @@
 		}
 	});
 
-    // this is worry 
+    // this is worry
     // but i still donot know why
     // i ll finish it later
 	// $('#showDeleBTN').toggle(function(){
@@ -304,7 +401,7 @@
 	// 	$('.dele-btn').hide();
 	// });
 	$('#showDeleBTN').click(function(){
-		
+
 		$('.dele-btn').toggle(500);
 	});
 
@@ -322,13 +419,13 @@
 
 	$('#addProjectBTN').click(function(event){
 		event.stopPropagation();
-		
+
 		var reponame = document.getElementById("reponame");
 		var repomaster = document.getElementById("repomaster");
 		var projectname = document.getElementById("projectname");
 		var students = document.getElementsByClassName("student");
 		// 检查输入是否合法
-		
+
 		var project = new Object();
 		project.projectname = projectname.value;
 		project.reponame = reponame.value;
@@ -340,7 +437,7 @@
 		for(var i=0 ; i<students.length;i++){
 			var student = new Object();
 			var stuDom = students[i];
-			
+
 			student.id = stuDom.getElementsByClassName("student-id")[0].value;
 			student.name = stuDom.getElementsByClassName("student-name")[0].value;
 			student.githubname = stuDom.getElementsByClassName("student-githubname")[0].value;
@@ -364,15 +461,15 @@
 				"project.students[0].id": studentList[0].id,
 				"project.students[0].name": studentList[0].name,
 				"project.students[0].githubname": studentList[0].githubname,
-				
+
 				"project.students[1].id": studentList[1].id,
 				"project.students[1].name": studentList[1].name,
 				"project.students[1].githubname": studentList[1].githubname,
-				
+
 				"project.students[2].id": studentList[2].id,
 				"project.students[2].name": studentList[2].name,
 				"project.students[2].githubname": studentList[2].githubname
-				
+
 			},
 			success:function(){
 				$('.form-background').hide();
@@ -389,7 +486,7 @@
 		var href = $(this.getElementsByTagName("td")[1]).text();
 		var msgs = href.split("/");
 		var go = location.href;
-		var str = go.slice(0,go.lastIndexOf('/')+1) + "repocommits.jsp?reponame=" + msgs[msgs.length-1] 
+		var str = go.slice(0,go.lastIndexOf('/')+1) + "repocommits.jsp?reponame=" + msgs[msgs.length-1]
 		  + "&repomaster=" + msgs[msgs.length-2]+"&studentMsgs="+$(this.getElementsByTagName("td")[2]).text()+"&projectname="+$(this.getElementsByTagName("td")[0]).text();
 		location.href = encodeURI(str);
 	});
@@ -399,7 +496,7 @@
 
 		var href = $(this).prev().prev().text();
 		var msgs = href.split("/");
-		
+
 		var $tr = $(this).parent();
 		$.ajax({
 			url : "aj/deleProject.action",

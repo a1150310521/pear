@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>EXCEL-导入导出测试</title>
+<!-- <script src="http://oss.sheetjs.com/js-xlsx/xlsx.full.min.js"></script> -->
+<script src="statics/js/xlsx.full.min.js"></script>
+
+</head>
+<body>
+
+<input type="file" onchange="importf(this)" />
+<div id="demo"></div>
+<script>
+var wb;//读取完成的数据
+var rABS = true ;//是否将文件读取为二进制字符串
+
+function importf(obj){
+  if(!obj.files){
+    return ;
+  }
+  var f = obj.files[0];//第一个文件
+  alert("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"==f.type);
+  var reader = new FileReader();
+  //好像ArrayBuffer类型的文件是base64编码的，BinaryString类型的文件是转换成二进制的
+  //不过这俩输出的字符串长一样啊。。。不懂啊啊啊啊啊
+  //哎，人家有一个btoa方法，这方法就是用来把ascii字符串或binary字符串转成base64编码的。。。gg
+  reader.onload = function(e){
+    var data = e.target.result;
+    // console.log("data :"+data);
+    // console.log("o: "+fixdata(data));
+    if(rABS){//读取为二进制
+
+      wb = XLSX.read(btoa(fixdata(data)),{
+        type:'base64'
+      });
+
+    }else{
+      // console.log("data :"+data);
+      wb = XLSX.read(data,{
+        type:'binary'
+      });
+
+    }
+
+    var importJSON = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]);
+
+    console.log(importJSON[0]["组员1姓名"]);
+    //wb.SheetNames[0]获取sheets中第一个sheet的名字
+    //wb.Sheets[sheetName]获取第一个Sheet的数据
+    document.getElementById("demo").innerHTML = JSON.stringify(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]]));
+    // document.getElementById("demo").innerHTML = JSON.stringify(wb.Sheets[wb.SheetNames[0]]['D2']);
+
+   };
+
+   /**
+   *这段代码会在onload之前执行
+   **/
+   if(rABS){
+     reader.readAsArrayBuffer(f);
+   }else{
+     reader.readAsBinaryString(f);
+   }
+ }
+
+
+
+function fixdata(data){
+  var o = "";
+  var l = 0;
+  var w = 10240;
+
+  for(;l<data.byteLength /w;++l){
+    var da = data.slice(l*w);
+    var l  = da.byteLength>=w?w:da.byteLength;
+
+    var temp = new Uint8Array(da,0,l);
+    // alert(temp.toString());
+      o += String.fromCharCode.apply(null, new Uint8Array(da,0,l));
+      //f.apply(o) or f.call(o) == o.f()  这种使用方法使o可以像是调用自己的方法一样调用其他函数
+      //f.apply(o,[p0,p1,p1 ...]) 与 f.call(o,p0,p1,p2...) 的区别就在于方法f的参数是不是以数组的方式传入的
+
+      //上一句代码之所以使用apply就在于其只能提供数组参数，而String.fromCharCode()方法需要非数组参数
+  }
+  // console.log("o:"+o);
+  return o;
+
+}
+
+</script>
+
+
+</body>
+</html>
