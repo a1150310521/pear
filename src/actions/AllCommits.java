@@ -28,7 +28,6 @@ import java.io.*;
 import java.sql.*;
 
 
-import beans.CommitBean;
 public class AllCommits extends ActionSupport{
     private String repomaster;
     private String reponame;
@@ -63,11 +62,11 @@ public class AllCommits extends ActionSupport{
       
       SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
       String[] formatMsg = line.split("&");
-      System.out.println("line 1: "+line);
+     
       for(int i=0;i<5;i++){
         String[] temp = formatMsg[i].split("=");
         if(i==0){
-//          System.out.println(temp.length);
+
           cb.setCommiter(temp[1]);
         }
         
@@ -173,7 +172,7 @@ public class AllCommits extends ActionSupport{
         
         //user dir has too many files ,delete 
 //        if(connect.FileTuility.countFiles(dir)>10){
-          connect.FileTuility.deleteDir(dir);
+//          connect.FileTuility.deleteDir(dir);
 //        }
         
         

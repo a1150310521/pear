@@ -39,7 +39,7 @@ public class FileTuility {
     else if(file.isDirectory()){
         File[]  files = file.listFiles();
         for(File i:files){
-//            System.out.println("name: "+i.getName());
+            System.out.println("name: "+i.getName());
             deleteDir(i.getAbsolutePath());
         }
         file.delete();

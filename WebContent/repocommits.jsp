@@ -114,6 +114,15 @@
 		    <canvas id="branchPicture"></canvas>
 		</div>
 
+    <div id="personalAnalyse">
+        <h4></h4>
+        <canvas  ></canvas>
+        <h4></h4>
+        <canvas ></canvas>
+        <h4></h4>
+        <canvas ></canvas>
+    </div>
+
 
 	</div>
 
@@ -396,10 +405,111 @@
 
 		}
 
+
+    // 个性化工作习惯分析
+    var drawTime = function(){
+      var studentObjList = [];
+      var box = document.getElementById("personalAnalyse");
+      var canvasList = box.getElementsByTagName("canvas");
+      var h4List = box.getElementsByTagName('h4');
+      var students = params["studentMsgs"].split(",");
+      for(var i =0 ;i<students.length;i++){
+        var perStu = students[i].split(" ");
+        studentObjList[i] =  new Object();
+				studentObjList[i]["id"] = perStu[0];
+				studentObjList[i]["name"] = perStu[1];
+				studentObjList[i]["githubname"] = perStu[2];
+
+        h4List[i].innerHTML = perStu[1];
+
+        studentObjList[i]["total"] = 0.0001;
+        // commit in hours
+        studentObjList[i]["cinh"] = [];
+        for(var j =0 ; j<24;j++){
+          studentObjList[i]["cinh"][j] = 0;
+        }
+      }
+
+      for(var i = 0;i<commitList.length ; i++){
+        var theCommit = commitList[i];
+        var commitDate = new Date(theCommit["date"]);
+
+        for(var j = 0;j<studentObjList.length;j++){
+          if(theCommit["commiter"].toLowerCase() == studentObjList[j]["githubname"].toLowerCase()){
+            studentObjList[j]["total"] ++;
+            studentObjList[j]["cinh"][commitDate.getHours()]++;
+
+          }
+        }
+      }
+
+      for(var i = 0;i<canvasList.length ; i++){
+        var canvas = canvasList[i];
+        var ctx = canvas.getContext('2d');
+        canvas.height = window.innerHeight *0.3;
+        canvas.width = window.innerWidth * 0.8;
+        var per = canvas.width / 24;
+        // 擦黑板
+  			ctx.save();
+  			ctx.fillStyle="#ffffff";
+  			ctx.fillRect(0,0,canvas.width,canvas.height);
+  			ctx.restore();
+
+        var thestudent = studentObjList[i];
+        // console.log(thestudent["cinh"].toString());
+        ctx.strokeStyle = "rgba(97,97,97,0.4)";
+        ctx.beginPath();
+        ctx.moveTo(0,canvas.height*0.92);
+        ctx.lineTo(canvas.width,canvas.height*0.92);
+        ctx.stroke();
+        for(var j = 0 ; j <24 ; j++){
+
+          ctx.fillStyle="hsl(356, 91%,"+ (100 - 50 * (thestudent["cinh"][j] / thestudent["total"]))
+          +"%)";
+          ctx.fillRect(j*per , 0 ,per,canvas.height*0.9);
+
+          ctx.fillStyle = "rgba(97,97,97,0.6)";
+          ctx.textBaseline = 'top';
+          ctx.textAlign = 'left';
+          ctx.fillText(j+'h' , j*per , canvas.height*0.92);
+        }
+
+      }
+
+
+    };
+
+
+    var personalAnaly = function(){
+      $('#loading').show().siblings().hide();
+      if(commitList[0] == undefined){
+        $.ajax({
+          url : "aj/getCommits.action",
+          type : "post",
+          dataType : "json",
+          data : {
+            reponame : params["reponame"],
+            repomaster : params["repomaster"]
+          },
+          success : function(data){
+            commitList = data.reverse();
+            drawTime();
+            $('#personalAnalyse').show().siblings().hide();
+          }
+        });
+      }
+      else{
+        drawTime();
+        $('#personalAnalyse').show().siblings().hide();
+      }
+    };
+
+
 		return {
 			'历史提交情况' : commitsLineChart,
 			'成员贡献率' : contributionRate,
-			'分支情况' : branchPic
+			'分支情况' : branchPic,
+      '个性化工作分析' : personalAnaly
 		}
 
 	})();
