@@ -5,7 +5,7 @@ public class DBconnect {
     try{
       Class.forName("com.mysql.jdbc.Driver");
       String url = "jdbc:mysql://localhost:3306/peardb?useUnicode=true&characterEncoding=utf-8&useSSL=false";
-      Connection conn = DriverManager.getConnection(url,"mushroom","adminmushroom");
+      Connection conn = DriverManager.getConnection(url,"root","123456");
       return conn;
       }catch(SQLException e){
         e.printStackTrace();

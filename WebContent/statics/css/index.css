@@ -16,6 +16,8 @@ a:hover {
   color: #333;
   text-shadow: none; /* Prevent inheritance from `body` */
   background-color: #fff;
+  opacity:0.5;
+  position: static;
   border: 1px solid #fff;
 }
 
@@ -28,6 +30,10 @@ html,
 body {
   height: 100%;
   background-color: #333;
+  background-image: url(../img/girl.jpg);
+  background-position: center top;
+  background-attachment: fixed;
+  background-size: cover;
 }
 body {
   color: #fff;
@@ -78,7 +84,7 @@ body {
   padding-left: 0;
   font-size: 16px;
   font-weight: bold;
-  color: #fff; /* IE8 proofing */
+  color: #000; /* IE8 proofing */
   color: rgba(255,255,255,.75);
   border-bottom: 2px solid transparent;
 }
@@ -91,7 +97,7 @@ body {
 .masthead-nav > .active > a,
 .masthead-nav > .active > a:hover,
 .masthead-nav > .active > a:focus {
-  color: #fff;
+  color: #000;
   border-bottom-color: #fff;
 }
 
@@ -115,7 +121,7 @@ body {
 .cover .btn-lg {
   padding: 10px 20px;
   font-weight: bold;
-  color: #333;
+  color: #000;
 }
 
 
